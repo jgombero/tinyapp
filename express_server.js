@@ -43,6 +43,7 @@ app.get('/urls/new', (req, res) => {
  // handles post request by url/new form
  app.post('/urls', (req, res) => {
   console.log(req.body);  //Log the POST request body to the console
+  const shortURL = generateRandomString();
   res.send('OK');         // Respond with 'Ok' (we will replace this)
  });
 
