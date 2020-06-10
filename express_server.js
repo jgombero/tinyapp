@@ -30,7 +30,7 @@ const generateRandomString = function() {
   return result;
 };
 
-// returns user object if emails match
+// returns user object if emails match *(try filter instead of for loop)*
 const emailLookup = function(database, userEmail) {
   let foundUser = '';
   for (const user in database) {
@@ -57,7 +57,7 @@ app.get('/hello', (req, res) => {
 
 // renders urls page on GET request
 app.get('/urls', (req, res) => {
-  console.log(users);
+  // console.log(users);
   let templateVars = { urls: urlDatabase, user: users[req.cookies.user_id] };
   res.render("urls_index", templateVars);
 });
@@ -70,11 +70,13 @@ app.get('/urls/new', (req, res) => {
 
 // renders registration page on GET request
 app.get('/register', (req, res) => {
-  res.render('user_registration');
+  let templateVars = { user: users[req.cookies.user_id] };
+  return res.render('user_registration', templateVars);
 });
 
 app.get('/login', (req, res) => {
-  return res.render('user_login');
+  let templateVars = { user: users[req.cookies.user_id] };
+  return res.render('user_login', templateVars);
 });
 
 // redirects to actual website from shortURL
