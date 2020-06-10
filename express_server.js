@@ -64,6 +64,11 @@ app.get('/urls', (req, res) => {
 
 // renders new page on GET request
 app.get('/urls/new', (req, res) => {
+  //if user isn't logged in:
+  if (!req.cookies.user_id) {
+    return res.redirect('/login');
+  }
+
   let templateVars = { user: users[req.cookies.user_id] };
   res.render('urls_new', templateVars);
 });
