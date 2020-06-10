@@ -14,15 +14,23 @@
     <div style='display: flex; justify-content: flex-end'>
       <form method="POST" action='/logout'>
         <div>Logged In As: <%= user.email %>!
-        <button type="submit" style="background-color: #28a745; color: black; padding: 0.5em 1em 0.5em 1em; border-radius: 5px; border-color: black; border-width: 1px; margin-left: 10px">Logout</button>
+          <button type="submit" style="background-color: #28a745; color: black; padding: 0.5em 1em 0.5em 1em; border-radius: 5px; border-color: black; border-width: 1px; margin-left: 10px">
+            Logout
+          </button>
         </div>
-    </form>
-    <% } else { %>
-      <form method="POST" action="/login">
-        <input type="text" name="username" placeholder="Username" style="border-radius: 5px; height: 2.5em; width: 13em; margin-right: 5px; border-color: white; padding-left: 10px">
-        <button type="submit" style="background-color: #28a745; color: black; padding: 0.5em 1em 0.5em 1em; border-radius: 5px; border-color: black; border-width: 1px;">Login</button>
       </form>
-      </div>
-      <% } %>
+    <% } else { %>
+      <form method='GET' action='/register'>
+        <button type="submit" style="background-color: #28a745; color: black; padding: 0.5em 1em 0.5em 1em; border-radius: 5px; border-color: black; border-width: 1px; margin-left: 10px">
+          Register
+        </button>
+      </form>
+      <form method='GET' action='/login'>
+        <button type="submit" style="background-color: #28a745; color: black; padding: 0.5em 1em 0.5em 1em; border-radius: 5px; border-color: black; border-width: 1px; margin-left: 10px">
+          Log in
+        </button>
+      </form>
+    </div>
+    <% } %>
   </nav>
 </header>
