@@ -13,9 +13,9 @@
     <% if (username) { %>
     <div style='display: flex; justify-content: flex-end'>
       <form method="POST" action='/logout'>
-        <p>Logged In As: <%= username %>!
-        <button type="submit" style="background-color: #28a745; color: black; padding: 0.5em 1em 0.5em 1em; border-radius: 5px; border-color: black; border-width: 1px; margin-left: 5px">Logout</button>
-        </p>
+        <div>Logged In As: <%= username %>!
+        <button type="submit" style="background-color: #28a745; color: black; padding: 0.5em 1em 0.5em 1em; border-radius: 5px; border-color: black; border-width: 1px; margin-left: 10px">Logout</button>
+        </div>
     </form>
     <% } else { %>
       <form method="POST" action="/login">
