@@ -8,6 +8,7 @@ const cookieSession = require('cookie-session');
 const bcrypt = require('bcrypt');
 const saltRounds = 10;
 
+
 const urlDatabase = {
   "b2xVn2": { longURL: "http://www.lighthouselabs.ca", userID: "aJ48lW"},
   "9sm5xK": { longURL: "http://www.google.com", userID: "aJ48lW"}
@@ -28,40 +29,13 @@ app.set("view engine", "ejs");
 // <------------------------------- Helper Functions ----------------------------------->
 
 // returns string of 6 random characters
-const generateRandomString = function() {
-  let result = '';
-  const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-  for (let i = 0; i < 6; i++) {
-    result += characters.charAt(Math.floor(Math.random() * characters.length));
-  }
-  return result;
-};
+const generateRandomString = require('./helpers.js').generateRandomString;
 
 // returns user object if emails match *(try filter instead of for loop)*
-const getUserByEmail = function(database, userEmail) {
-  let foundUser = '';
-  for (const user in database) {
-    if (database[user].email === userEmail) {
-      foundUser = database[user];
-    }
-  }
-  return foundUser;
-};
+const getUserByEmail = require('./helpers.js').getUserByEmail;
 
 // returns all urls that match cookie ID
-const urlsForUser = function(database, id) {
-  const filteredDatabase = {};
-
-  for (const url in database) {
-
-    if (database[url].userID === id) {
-
-      const matchURL = { longURL: database[url].longURL, userID: id };
-      filteredDatabase[url] = matchURL;
-    }
-  }
-  return filteredDatabase;
-};
+const urlsForUser = require('./helpers.js').urlsForUser;
 
 // <-------------------------------- GET requests -------------------------------------->
 
