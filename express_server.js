@@ -4,6 +4,7 @@ const app = express();
 const PORT = 8080; // default port 8080
 const bodyParser = require('body-parser');
 const cookieParser = require('cookie-parser');
+const bcrypt = require('bcrypt');
 
 const urlDatabase = {
   "b2xVn2": { longURL: "http://www.lighthouselabs.ca", userID: "aJ48lW"},
@@ -72,6 +73,7 @@ app.get('/hello', (req, res) => {
 
 // renders urls page on GET request
 app.get('/urls', (req, res) => {
+  console.log(users);
   if (users[req.cookies.user_id]) {
 
     const filteredDatabase = urlsForUser(urlDatabase, req.cookies.user_id);
@@ -157,8 +159,9 @@ app.post('/register', (req, res) => {
   const userID = generateRandomString();
   const userEmail = req.body.email;
   const userPass = req.body.password;
+  const hashedPassword = bcrypt.hashSync(userPass, 10);
 
-  if (!userID || !userPass) {
+  if (!userID || !hashedPassword) {
     return res.status(400).send('Error 400: Email and/or Password Invalid');
   }
 
@@ -169,7 +172,7 @@ app.post('/register', (req, res) => {
   const newUser = {
     id : userID,
     email : userEmail,
-    password: userPass
+    password: hashedPassword
   };
   users[userID] = newUser;
 
@@ -183,20 +186,24 @@ app.post('/login', (req, res) => {
   const user = emailLookup(users, userEmail);
 
   if (!user) {
-    return res.status(403).send('Error 403: Email cannot be found');
+    return res.status(403).send('Email address cannot be found. Please register');
+    // return res.render('/login', { error: 'Email address cannot be found. Please register' });
   }
 
-  if (user.password === userPass) {
+  const passwordMatch = bcrypt.compareSync(userPass, user.password);
+
+  if (passwordMatch) {
     res.cookie('user_id', user.id);
     return res.redirect('/urls');
   }
 
   return res.status(403).send('Email and/or Password does not match');
+  // return res.render('/login', { error: 'Email and/or Password does not match' });
 });
 
 app.post('/logout', (req, res) => {
   res.clearCookie('user_id');
-  return res.redirect('/urls');
+  return res.redirect('/login');
 });
 
 // updates new longURL with our shortURL *** Add error page
