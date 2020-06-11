@@ -45,15 +45,15 @@ const emailLookup = function(database, userEmail) {
 const urlsForUser = function(database, id) {
   const filteredDatabase = {};
 
-    for (const url in database) {
+  for (const url in database) {
 
-      if (database[url].userID === id) {
+    if (database[url].userID === id) {
 
-        const matchURL = { longURL: database[url].longURL, userID: id };
-        filteredDatabase[url] = matchURL;
-      }
+      const matchURL = { longURL: database[url].longURL, userID: id };
+      filteredDatabase[url] = matchURL;
     }
-    return filteredDatabase;
+  }
+  return filteredDatabase;
 };
 
 // <-------------------------------- GET requests -------------------------------------->
@@ -118,7 +118,7 @@ app.get('/login', (req, res) => {
 app.get("/u/:shortURL", (req, res) => {
   if (urlDatabase[req.params.shortURL]) {
     const longURL = urlDatabase[req.params.shortURL].longURL;
-  return res.redirect(longURL);
+    return res.redirect(longURL);
   }
   
 });
@@ -127,7 +127,7 @@ app.get("/u/:shortURL", (req, res) => {
 app.get('/urls/:shortURL', (req, res) => {
   if (urlDatabase[req.params.shortURL] && users[req.cookies.user_id]) {
     let templateVars = { shortURL: req.params.shortURL, longURL: urlDatabase[req.params.shortURL].longURL, user: users[req.cookies.user_id] };
-  return res.render('urls_show', templateVars);
+    return res.render('urls_show', templateVars);
   }
   return res.redirect('/login');
 });
