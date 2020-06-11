@@ -104,7 +104,7 @@ app.get('/register', (req, res) => {
   return res.redirect('/urls');
 });
 
-// renders login page on GET request
+// renders login page on GET request *** Not using yet
 app.get('/login', (req, res) => {
   if (!users[req.cookies.user_id]) {
     let templateVars = { user: users[req.cookies.user_id] };
@@ -123,13 +123,18 @@ app.get("/u/:shortURL", (req, res) => {
   
 });
 
-// renders edit page for current shortURL *** Add error page
+// renders edit page for current shortURL
 app.get('/urls/:shortURL', (req, res) => {
   if (urlDatabase[req.params.shortURL] && users[req.cookies.user_id]) {
     let templateVars = { shortURL: req.params.shortURL, longURL: urlDatabase[req.params.shortURL].longURL, user: users[req.cookies.user_id] };
   return res.render('urls_show', templateVars);
   }
   return res.redirect('/login');
+});
+
+app.get('/error', (req, res) => {
+  let templateVars = { user: users[req.cookies.user_id] };
+  res.render('error_page', templateVars);
 });
 
 
