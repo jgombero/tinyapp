@@ -75,7 +75,7 @@ app.get('/register', (req, res) => {
   return res.redirect('/urls');
 });
 
-// renders login page on GET request *** Not using yet
+// renders login page on GET request
 app.get('/login', (req, res) => {
   if (!users[req.session.user_id]) {
     let templateVars = { user: users[req.session.user_id], error: null };
@@ -85,7 +85,7 @@ app.get('/login', (req, res) => {
   return res.redirect('/urls');
 });
 
-// redirects to actual website from shortURL *** Add error page
+// redirects to actual website from shortURL
 app.get("/u/:shortURL", (req, res) => {
   if (urlDatabase[req.params.shortURL]) {
     const longURL = urlDatabase[req.params.shortURL].longURL;
@@ -168,7 +168,7 @@ app.post('/logout', (req, res) => {
   return res.redirect('/login');
 });
 
-// updates new longURL with our shortURL *** Add error page
+// updates new longURL with our shortURL
 app.post('/urls/:id', (req, res) => {
   if (users[req.session.user_id] && req.session.user_id === urlDatabase[req.params.id].userID) {
     urlDatabase[req.params.id].longURL = req.body.longURL;

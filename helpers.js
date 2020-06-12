@@ -33,7 +33,7 @@ const urlsForUser = function(database, id) {
   return filteredDatabase;
 };
 
-module.exports = { 
+module.exports = {
   getUserByEmail,
   generateRandomString,
   urlsForUser
