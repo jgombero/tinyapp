@@ -1,41 +1,31 @@
 // <---------------------------------- Constants -------------------------------------->
 const express = require('express');
 const app = express();
-const PORT = 8080; // default port 8080
+const PORT = 8080;
 const bodyParser = require('body-parser');
-// const cookieParser = require('cookie-parser');
 const cookieSession = require('cookie-session');
 const bcrypt = require('bcrypt');
 const saltRounds = 10;
 
+const users = {};
 
+// Sample urlDatabase
 const urlDatabase = {
   "b2xVn2": { longURL: "http://www.lighthouselabs.ca", userID: "aJ48lW"},
   "9sm5xK": { longURL: "http://www.google.com", userID: "aJ48lW"}
 };
 
-const users = {};
+// Helper Functions
+const { generateRandomString, getUserByEmail, urlsForUser} = require('./helpers.js');
 
 // <---------------------------------- Middleware -------------------------------------->
 
-// app.use(cookieParser());
 app.use(cookieSession({
   name: 'session',
   keys: ['onesmartfellowhefeltsmart']
 }));
 app.use(bodyParser.urlencoded({extended: true}));
 app.set("view engine", "ejs");
-
-// <------------------------------- Helper Functions ----------------------------------->
-
-// returns string of 6 random characters
-const generateRandomString = require('./helpers.js').generateRandomString;
-
-// returns user object if emails match *(try filter instead of for loop)*
-const getUserByEmail = require('./helpers.js').getUserByEmail;
-
-// returns all urls that match cookie ID
-const urlsForUser = require('./helpers.js').urlsForUser;
 
 // <-------------------------------- GET requests -------------------------------------->
 
@@ -53,7 +43,6 @@ app.get('/hello', (req, res) => {
 
 // renders urls page on GET request
 app.get('/urls', (req, res) => {
-  console.log(users);
   if (users[req.session.user_id]) {
 
     const filteredDatabase = urlsForUser(urlDatabase, req.session.user_id);
@@ -79,7 +68,7 @@ app.get('/urls/new', (req, res) => {
 // renders registration page on GET request
 app.get('/register', (req, res) => {
   if (!users[req.session.user_id]) {
-    let templateVars = { user: users[req.session.user_id] };
+    let templateVars = { user: users[req.session.user_id], error: null };
     return res.render('user_registration', templateVars);
   }
 
@@ -89,7 +78,7 @@ app.get('/register', (req, res) => {
 // renders login page on GET request *** Not using yet
 app.get('/login', (req, res) => {
   if (!users[req.session.user_id]) {
-    let templateVars = { user: users[req.session.user_id] };
+    let templateVars = { user: users[req.session.user_id], error: null };
     return res.render('user_login', templateVars);
   }
 
@@ -114,12 +103,6 @@ app.get('/urls/:shortURL', (req, res) => {
   return res.redirect('/login');
 });
 
-app.get('/error', (req, res) => {
-  let templateVars = { user: users[req.session.user_id] };
-  res.render('error_page', templateVars);
-});
-
-
 // <------------------------------- POST requests -------------------------------------->
  
 // handles post request by url/new form,
@@ -142,11 +125,12 @@ app.post('/register', (req, res) => {
   const hashedPassword = bcrypt.hashSync(userPass, saltRounds);
 
   if (!userID || !hashedPassword) {
-    return res.status(400).send('Error 400: Email and/or Password Invalid');
+    // this is kind of redundant since i've added "require" to the inputs
+    return res.status(403).render('user_registration', { error: "Email and/or Password Invalid", user: null });
   }
 
   if (getUserByEmail(users, userEmail)) {
-    return res.status(400).send('Error 400: Email already exists');
+    return res.status(403).render('user_registration', { error: "Email already exists", user: null });
   }
 
   const newUser = {
@@ -166,8 +150,7 @@ app.post('/login', (req, res) => {
   const user = getUserByEmail(users, userEmail);
 
   if (!user) {
-    return res.status(403).send('Email address cannot be found. Please register');
-    // return res.render('/login', { error: 'Email address cannot be found. Please register' });
+    return res.status(403).render('user_login', { error: 'Email address cannot be found. Please register', user: null });
   }
 
   const passwordMatch = bcrypt.compareSync(userPass, user.password);
@@ -177,8 +160,7 @@ app.post('/login', (req, res) => {
     return res.redirect('/urls');
   }
 
-  return res.status(403).send('Email and/or Password does not match');
-  // return res.render('/login', { error: 'Email and/or Password does not match' });
+  return res.status(403).render('user_login', { error: 'Email and/or Password does not match', user: null });
 });
 
 app.post('/logout', (req, res) => {
@@ -188,7 +170,7 @@ app.post('/logout', (req, res) => {
 
 // updates new longURL with our shortURL *** Add error page
 app.post('/urls/:id', (req, res) => {
-  if (users[req.session.user_id] && req.session.user_id === urlDatabase[req.params.shortURL].userID) {
+  if (users[req.session.user_id] && req.session.user_id === urlDatabase[req.params.id].userID) {
     urlDatabase[req.params.id].longURL = req.body.longURL;
     return res.redirect('/urls');
   }
