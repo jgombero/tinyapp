@@ -30,15 +30,10 @@ app.set("view engine", "ejs");
 // <-------------------------------- GET requests -------------------------------------->
 
 app.get('/', (req, res) => {
-  res.send("Hello!");
-});
-
-app.get('/urls.json', (req, res) => {
-  res.json(urlDatabase);
-});
-
-app.get('/hello', (req, res) => {
-  res.send("<html><body>Hello <b>World</b></body></html>\n");
+  if (req.session.user_id) {
+    return res.redirect('/urls');
+  }
+  return res.redirect('/login');
 });
 
 // renders urls page on GET request
@@ -91,7 +86,7 @@ app.get("/u/:shortURL", (req, res) => {
     const longURL = urlDatabase[req.params.shortURL].longURL;
     return res.redirect(longURL);
   }
-  
+  return res.redirect('/error');
 });
 
 // renders edit page for current shortURL
@@ -99,8 +94,15 @@ app.get('/urls/:shortURL', (req, res) => {
   if (urlDatabase[req.params.shortURL] && users[req.session.user_id]) {
     let templateVars = { shortURL: req.params.shortURL, longURL: urlDatabase[req.params.shortURL].longURL, user: users[req.session.user_id] };
     return res.render('urls_show', templateVars);
+    
+  } else if (!urlDatabase[req.params.shortURL] && users[req.session.user_id]) {
+    return res.redirect('/error');
   }
   return res.redirect('/login');
+});
+
+app.get('/error', (req, res) => {
+  res.render('error_page', { user: users[req.session.user_id] });
 });
 
 // <------------------------------- POST requests -------------------------------------->
